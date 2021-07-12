@@ -1,0 +1,140 @@
+body {
+  font-size: 16px;
+  color: #000;
+  background-color: #fff;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/** HEADER **/
+.container-fluid {
+  background-color: #777574;
+  border-radius: 0;
+  border: 0px;
+  border-color: #000;
+  
+  
+}
+
+.navbar-default{
+  background-color: #777574;
+  border: 20px;
+  border-color: black;
+}
+
+
+.navbar-default .navbar-brand {
+  color: #000; 
+}
+
+#collapsable-nav{
+  border-color: black;
+}
+
+
+.navbar-default .navbar-toggle {
+  border-color: #000;
+}
+
+.navbar-default .navbar-toggle .icon-bar {
+  background-color: #000;
+}
+
+.navbar-brand { /* Company name */
+  /*font-family: 'Lora', serif;*/
+  color: #000;
+  font-size: 1.5em;
+  /*text-transform: uppercase; */
+  font-weight: bold;
+  /*text-shadow: 1px 1px 1px #222;*/ 
+  margin-top: 0;
+  margin-bottom: 0;
+  text-align: left;
+  line-height: .75;
+}
+
+#nav-list {
+  border: 5px;
+  margin-top: 10px;
+}
+
+#nav-list a {
+  color: #000;
+  text-align: center;
+  border-color: rgb(199, 26, 26);
+  background-color: #E7E7E7;
+}
+
+#nav-list #a1{
+  border: 2px;
+  border-color: black;
+}
+
+#nav-list a:hover {
+  background: #E7E7E7;
+}
+
+/* Main content */
+#main-content{
+  width: 100%;
+  margin-right: 0;
+  margin-left: 0;
+}
+
+.category-tile { 
+  position: relative;
+  border: 2px solid #3F0C1F;
+  overflow: hidden;
+  width: 100%;
+  height: 600px;
+  margin: 0 2px 2px 5px;
+  background-color: #777574;
+}
+.category-tile span {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  text-align: center;
+  font-size: 1.8em;
+  color:black;  
+}
+
+.category-tile p {
+  position: absolute;
+  top: 50px;
+
+}
+
+
+/********** Large devices only **********/
+@media (min-width: 1200px) {
+  
+  #nav-list {
+    display: none;
+  }
+
+}
+
+/********** Medium devices only **********/
+@media (min-width: 992px) and (max-width: 1199px) {
+  
+  /* Header */
+  #nav-list {
+    display: none;
+  }
+  /* End Header */
+}
+
+/********** Small devices only **********/
+@media (min-width: 768px) and (max-width: 991px) {
+  #nav-list {
+    display: none;
+  }
+
+}
+
+/********** Extra small devices only **********/
+@media (max-width: 767px) {
+  
+}
+
