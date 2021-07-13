@@ -7,7 +7,7 @@
 // See Lecture 52, part 1
  var helloSpeaker = {};
   //helloSpeaker.name = window.something;
-  console.log(window.something);
+  //console.log(window.something);
 
   // DO NOT attach the speakWord variable to the 'helloSpeaker' object.
   var speakWord = "Hello";
