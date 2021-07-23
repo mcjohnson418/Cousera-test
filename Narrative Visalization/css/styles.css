@@ -1,0 +1,43 @@
+body {
+    font-family: Helvetica, Arial, sans-serif
+}
+
+h1 {
+    background-color: #2a5599;
+    color: white;
+    padding: 5px;
+}
+
+h2 {
+    text-align:center;
+}
+
+svg{
+    border: solid 1px black;
+    margin-right: 50px;
+}
+
+
+.mainView{
+    width: 1500px;
+    height: 600px;
+    display: flex;
+    padding: 10px;
+}
+
+.Box2{
+    position: absolute;
+    top: 500px;
+}
+
+.Box3{
+    position: absolute;
+    left: 850px;
+}
+
+
+.Box4{
+    position: absolute;
+    left: 850px;
+    top: 500px;
+}

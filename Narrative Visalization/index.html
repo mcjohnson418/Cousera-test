@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>CS-416 Narative Visualization Project</title>
+        <link rel="stylesheet" href="css/styles.css">
+		<script src="https://d3js.org/d3.v7.min.js"></script>
+    </head>
+    <body>
+        <h1>A Nation's Wealth, Mortality Rate and Life Expentancy... do they corralete? </h1>
+        <div class="mainView">
+            <div class="Box1">
+                <h2>GDP vs Female<br> Mortality Rate</h2>
+                <svg id="GDPperCapita_FemaleMortalityChart"></svg>
+            </div>
+            <div class="Box2">
+                <h2>GDP vs Male<br> Mortality Rate</h2>
+                <svg id="GDPperCapita_MaleMortalityChart"></svg>
+            </div>
+            <div class="Box3">
+                <h2>GDP vs Life<br> Expectancy</h2>
+                <svg id="GDPperCapita_LifeExpectancyChart"></svg>
+            </div>
+            <div class="Box4">
+                <h2>World Mapp of Current<br>Health Expediture </h2>
+                <svg id="WorldMap"></svg>
+            </div>
+            
+        </div>
+    </body>
+    <script>
+        let WDIdataset = {};
+
+        function loadData(){
+            //let promise = d3.csv("WDIData_WDIData2.csv"); //WDIData_Full Data_Scrubbed2.csv
+            return Promise.all([d3.csv("WDIData_WDIData2.csv"),
+                                d3.json("countries.geo.json")]).then(AllData => {
+                                    WDIdataset.WDIData = AllData[0];
+                                    WDIdataset.geoJSON = AllData[1]
+                                    return WDIdataset;
+                })
+        }
+
+        function groupByFemaleMortality(data) { 
+            Count = 0;
+            let result = data.reduce((result, d) => {
+                if (d["Indicator Code"] === "SP.DYN.AMRT.FE"){
+                    let currentData = {
+                        "Country Code": d["Country Code (WDICountry.csv)"],   
+                        "Country Name": d["Country Name"],
+                        "Female Mortality Rate": +d["Mortality rate, Female"],
+                        "Year": +d["Year"]
+                    };
+                    //console.log(currentData);
+                    result[Count] = currentData;
+                    Count += 1;
+                };
+                return result;
+            }, {})
+    
+            //Need to map objects to list. It seems to work better
+            result = Object.keys(result).map(key => result[key])
+            result = result.sort((a,b) => {
+                return d3.ascending(a["Country Code"], b["Country Code"]);
+            })
+            return result
+        }
+
+        function groupByMaleMortality(data) { 
+            Count = 0;
+            let result = data.reduce((result, d) => {
+                if (d["Indicator Code"] === "SP.DYN.AMRT.MA"){
+                    let currentData = {
+                        "Country Code": d["Country Code (WDICountry.csv)"],
+                        "Country Name": d["Country Name"],
+                        "Male Mortality Rate": +d["Mortality rate, Male"],
+                        "Year": +d["Year"]
+                    };
+                    //console.log(currentData);
+                    result[Count] = currentData;
+                    Count += 1;
+                };
+                return result;
+            }, {})
+    
+            //Need to map objects to list. It seems to work better
+            result = Object.keys(result).map(key => result[key])
+            result = result.sort((a,b) => {
+                return d3.ascending(a["Country Code"], b["Country Code"]);
+            })
+            return result
+        }
+
+        function groupByPopulation(data) { 
+            Count = 0;
+            let result = data.reduce((result, d) => {
+                if (d["Indicator Code"] === "SP.POP.TOTL"){
+                    let currentData = {
+                        "Country Code": d["Country Code (WDICountry.csv)"],
+                        "Country Name": d["Country Name"],
+                        "Population": +d["Total Population"],
+                        "Year": +d["Year"]
+                    };
+                    //console.log(currentData);
+                    result[Count] = currentData;
+                    Count += 1;
+                };
+                return result;
+            }, {})
+    
+            //Need to map objects to list. It seems to work better
+            result = Object.keys(result).map(key => result[key])
+            result = result.sort((a,b) => {
+                return d3.ascending(a["Country Code"], b["Country Code"]);
+            })
+            return result
+        }
+
+        function groupByLifeExpectancy(data) { 
+            Count = 0;
+            let result = data.reduce((result, d) => {
+                if (d["Indicator Code"] === "SP.DYN.LE00.IN"){
+                    let currentData = {
+                        "Country Code": d["Country Code (WDICountry.csv)"],
+                        "Country Name": d["Country Name"],
+                        "Life Expectancy": +d["Life Expectancy"],
+                        "Year": +d["Year"]
+                    };
+                    //console.log(currentData);
+                    result[Count] = currentData;
+                    Count += 1;
+                };
+                return result;
+            }, {})
+    
+            //Need to map objects to list. It seems to work better
+            result = Object.keys(result).map(key => result[key])
+            result = result.sort((a,b) => {
+                return d3.ascending(a["Country Code"], b["Country Code"]);
+            })
+            return result
+        }
+
+        function groupByGDPperCapita(data) {
+            Count = 0;
+            let result = data.reduce((result, d) => {
+                if (d["Indicator Code"] === "NY.GDP.PCAP.KD"){
+                    let currentData = {
+                        "Country Code": d["Country Code (WDICountry.csv)"],
+                        "Country Name": d["Country Name"],
+                        "Income Group": d["Income Group"],
+                        "GDP per Capita": +d["GDP per capita"],
+                        "Year": +d["Year"]
+                    };
+                    //console.log(currentData);
+                    result[Count] = currentData;
+                    Count += 1;
+                };
+               return result
+            }, {})
+    
+            //Need to map objects to list. It seems to work better
+            result = Object.keys(result).map(key => result[key])
+            result = result.sort((a,b) => {
+                return d3.ascending(a["Country Code"], b["Country Code"]);
+            })
+            return result
+        }
+
+        function groupByHealthExpenditureperCapita(data) {
+            Count = 0;
+            let result = data.reduce((result, d) => {
+                if (d["Indicator Code"] === "SH.XPD.CHEX.PC.CD"){
+                    let currentData = {
+                        "Country Code": d["Country Code (WDICountry.csv)"],
+                        "Country Name": d["Country Name"],
+                        "Curr Health expenditure per cap": +d["Curr Health expenditure per cap"],
+                        "Year": +d["Year"]
+                    };
+                    //console.log(currentData);
+                    result[Count] = currentData;
+                    Count += 1;
+                };
+               return result
+            }, {})
+    
+            //Need to map objects to list. It seems to work better
+            result = Object.keys(result).map(key => result[key])
+            result = result.sort((a,b) => {
+                return d3.ascending(a["Country Code"], b["Country Code"]);
+            })
+            return result
+        }
+
+        function mergeData(GDP,MortalityRate){
+            GDP = GDP.sort((a,b) => {
+                return d3.ascending(a["Year"], b["Year"]);
+            });
+
+            MortalityRate = MortalityRate.sort((a,b) => {
+                return d3.ascending(a["Year"], b["Year"]);
+            });
+            
+            let mergedData = {};
+            
+            for (let i = 0; i < MortalityRate.length; i++) {
+                if ((GDP[i]["Country Code"] === MortalityRate[i]["Country Code"]) && (GDP[i]["Year"] == MortalityRate[i]["Year"])) {
+                    mergedData[i] = Object.assign({},MortalityRate[i], GDP[i]);
+                }
+            };
+            mergedData = Object.keys(mergedData).map(key => mergedData[key]);
+            mergedData = mergedData.sort((a,b) => {
+                return d3.ascending(a["Country Code"], b["Country Code"]);
+            })   
+            return mergedData;
+        }
+        
+
+        function getConfig(stringValue, width, height) {
+            let margin = {
+                top: 10,
+                bottom: 50,
+                left: 130,
+                right: 10
+                };
+            
+            //The body is the area that will be occupied by the scatterplot.
+            let bodyHeight = height - margin.top - margin.bottom;
+            let bodyWidth = width - margin.left - margin.right; 
+
+            //The container is the SVG where we will draw the scatterplot. 
+            let container = d3.select(stringValue); 
+            container.attr("width", width)
+                     .attr("height", height)
+            
+            return { width, height, margin, bodyHeight, bodyWidth, container };
+        }
+
+        function getMapConfig(stringValue, width, height) {
+            //The container is the SVG where we will draw the world map. 
+            let container = d3.select(stringValue); 
+            container.attr("width", width)
+                     .attr("height", height)
+            
+            return { width, height, container };
+        }
+
+        
+        function getCircleScales(xValue, yValue, Mortality, config) {
+            let { bodyWidth, bodyHeight } = config;
+            
+            let maximumPopulation = d3.max(Mortality, d =>{
+                return d["Population"];
+            });    
+        
+            let xScale = d3.scaleLinear()
+                           .range([0, bodyWidth]) 
+                           .domain([0, xValue])
+             
+            let yScale = d3.scaleLinear()
+                           .range([0, bodyHeight])
+                           .domain([yValue, 0])
+
+            let rScale = d3.scaleLinear()
+                           .range([0,50])
+                           .domain([0, maximumPopulation])   
+
+            let colorScale = d3.scaleSequential()
+                               .domain([0,1])
+                               .interpolator(d3.interpolateRainbow)
+                  
+            return { xScale, yScale, rScale, colorScale };
+        } 
+
+        
+
+        function drawGDPvsFemaleMortalityScatter(MergedData, scales, config) {
+            let {margin, container} = config; // this is equivalent to 'let margin = config.margin; let container = config.container'
+            let {xScale, yScale, rScale, colorScale} = scales;
+            let body = container.append("g")
+                                .style("transform", `translate(${margin.left}px,${margin.top}px)`)
+
+            let maxHealth = d3.max(MergedData, d =>{
+                return d["Curr Health expenditure per cap"];
+            });
+
+            let ScatterPlots = body.selectAll("circle")
+                                   .data(MergedData)
+
+
+            ScatterPlots.enter()
+                        .append("circle")
+                        .attr("cx", function(d) {
+                            if (d["Year"]== 2018) {
+                                return xScale(d["Female Mortality Rate"])
+                            } else { return 0}})
+                            
+                        .attr("cy", function(d) {
+                            if (d["Year"]===2018) {
+                                return yScale(d["GDP per Capita"])
+                            } else {return 0}})
+                        .attr("r", function(d) {
+                            if (d["Year"]==2018) {
+                                return rScale(d["Population"])
+                        } else {return 0}})
+                        .attr("fill", function(d) { 
+                             if (d["Year"]==2018){
+                                 return colorScale(d["Curr Health expenditure per cap"]/maxHealth)
+                             }})
+                         .append("title")
+                           //.append("text")
+                           //.attr("dy","0em")
+                           .text(function(d){
+                             if (d["Year"]==2018){
+                                 return "Country Name: " + d["Country Name"] + "\n" + "Income Group: " + d["Income Group"] + "\n" +
+                                 "Curr Health expenditure per cap: " + d["Curr Health expenditure per cap"] + "\n" +
+                                 "GDP per Capita: " + d["GDP per Capita"] + "\n" + "Population: " + d["Population"] + "\n" +
+                                 "Female Mortality Rate: " + d["Female Mortality Rate"] +
+                                 "\n" + "Year: " + d["Year"];
+                              }})      
+        }
+
+        function drawGDPvsMaleMortalityScatter(MergedData, scales, config) {
+            let {margin, container} = config; // this is equivalent to 'let margin = config.margin; let container = config.container'
+            let {xScale, yScale, rScale, colorScale} = scales;
+            let body = container.append("g")
+                                .style("transform", `translate(${margin.left}px,${margin.top}px)`)
+
+            let maxHealth = d3.max(MergedData, d =>{
+                return d["Curr Health expenditure per cap"];
+            });
+
+            let ScatterPlots = body.selectAll("circle")
+                                   .data(MergedData)
+
+
+            ScatterPlots.enter()
+                        .append("circle")
+                        .attr("cx", function(d) {
+                            if (d["Year"]== 2018) {
+                                return xScale(d["Male Mortality Rate"])
+                            } else { return 0}})
+                            
+                        .attr("cy", function(d) {
+                            if (d["Year"]===2018) {
+                                return yScale(d["GDP per Capita"])
+                            } else {return 0}})
+                        .attr("r", function(d) {
+                            if (d["Year"]==2018) {
+                                return rScale(d["Population"])
+                        } else {return 0}})
+                        .attr("fill", function(d) { //"#2a5599"
+                             if (d["Year"]==2018){
+                                 return colorScale(d["Curr Health expenditure per cap"]/maxHealth)
+                             }})
+                         .append("title")
+                           //.append("text")
+                           //.attr("dy","0em")
+                           .text(function(d){
+                             if (d["Year"]==2018){
+                                 return "Country Name: " + d["Country Name"] + "\n" + "Income Group: " + d["Income Group"] + "\n" +
+                                 "Curr Health expenditure per cap: " + d["Curr Health expenditure per cap"] + "\n" +
+                                 "GDP per Capita: " + d["GDP per Capita"] + "\n" + "Population: " + d["Population"] + "\n" + "Male Mortality Rate: " + d["Male Mortality Rate"] + 
+                                 "\n" + "Year: " + d["Year"];
+                              }})      
+        }
+
+
+
+        function drawAxesChart(mergedData, scales, config){
+            let {xScale, yScale} = scales;
+            let {container, margin, height} = config;
+
+            let axisX = d3.axisBottom(xScale)
+                          .ticks(5)
+
+            container.append("g")
+                     .style("transform",`translate(${margin.left}px,${height - margin.bottom}px)`)
+                     .call(axisX)
+
+            let axisY = d3.axisLeft(yScale)
+
+            container.append("g")
+                     .style("transform",`translate(${margin.left}px,${margin.top}px)`)
+                     .call(axisY)
+        }
+
+        function getMapProjection(config) {
+            let {width, height} = config;
+            let projection = d3.geoMercator()
+            projection.scale(97)
+                       .translate([width / 2, height / 2 + 20])
+            
+            WDIdataset.mapProjection = projection;
+            return projection;
+        }
+
+        function drawBaseMap(container, countries, projection){
+            let path = d3.geoPath()
+                         .projection(projection)
+
+            container.selectAll("path").data(countries)
+                .enter().append("path")
+                .attr("d",d => path(d))
+                .attr("stroke", "#ccc")
+                .attr("fill", "#eee")
+        }
+
+        
+        function showData(){
+            //console.log(store.WDIData);
+            let FemaleMor = groupByFemaleMortality(WDIdataset.WDIData);
+            let GDPperCap = groupByGDPperCapita(WDIdataset.WDIData);
+            let Population = groupByPopulation(WDIdataset.WDIData);
+            let MaleMor = groupByMaleMortality(WDIdataset.WDIData);
+            let LifeExp = groupByLifeExpectancy(WDIdataset.WDIData);
+            let HeatlthExp = groupByHealthExpenditureperCapita(WDIdataset.WDIData);
+            
+            let MergedData = mergeData(HeatlthExp,mergeData(LifeExp,mergeData(MaleMor,mergeData(Population,mergeData(FemaleMor, GDPperCap)))));
+            
+            let FemaleConfig = getConfig("#GDPperCapita_FemaleMortalityChart", 750, 250);
+            let xValue = 450;
+            let yValue = 65000; 
+            let FemScales = getCircleScales(xValue, yValue, MergedData, FemaleConfig)
+            drawGDPvsFemaleMortalityScatter(MergedData, FemScales, FemaleConfig);
+            drawAxesChart(MergedData, FemScales, FemaleConfig);
+
+            let MaleConfig = getConfig("#GDPperCapita_MaleMortalityChart", 750, 250);
+            let MaleScales = getCircleScales(xValue, yValue, MergedData, MaleConfig)
+            drawGDPvsMaleMortalityScatter(MergedData, MaleScales, MaleConfig);
+            drawAxesChart(MergedData, MaleScales, MaleConfig);
+
+            let LifeConfig = getConfig("#GDPperCapita_LifeExpectancyChart", 750, 250);
+
+            let MapConfig = getMapConfig("#WorldMap", 750, 250);
+            let projection = getMapProjection(MapConfig);
+            drawBaseMap(MapConfig.container, WDIdataset.geoJSON.features, projection)
+
+
+            console.log(MergedData);
+        }
+
+        loadData().then(showData);
+        
+
+    </script>    
+</html>
