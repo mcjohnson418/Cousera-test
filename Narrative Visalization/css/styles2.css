@@ -2,11 +2,18 @@ body {
     font-family: Helvetica, Arial, sans-serif
 }
 
-body a{
+#a1{
+    position: absolute;
+    bottom: 10px;
+    left: 30px;
+}
+
+#a2{
     position: absolute;
     bottom: 10px;
     right: 30px;
 }
+
 h1 {
     background-color: #2a5599;
     color: white;

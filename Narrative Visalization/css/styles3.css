@@ -2,11 +2,18 @@ body {
     font-family: Helvetica, Arial, sans-serif
 }
 
-body a{
+#a1{
+    position: absolute;
+    bottom: 10px;
+    left: 30px;
+}
+
+#a2{
     position: absolute;
     bottom: 10px;
     right: 30px;
 }
+
 h1 {
     background-color: #2a5599;
     color: white;
@@ -30,25 +37,28 @@ svg{
     padding: 10px;
 }
 
+#FemaleSlider {
+    position:absolute;
+    width: 600px;
+    bottom: 100px;
+    left: 150px;
+}
+
+#MaleSlider {
+    position:absolute;
+    width: 600px;
+    bottom: 100px;
+    right: 400px;
+}
+
+.Box1{
+    position: absolute;
+    left: 100px;
+}
 
 .Box2{
     position: absolute;
-    left: 750px;
+    left: 1000px;
 }
 
-.Box3{
-    position: absolute;
-    left: 750px;
-    top: 450px
-}
 
-.Box4{
-    position: absolute;
-    left: 1350px;
-}
-
-.Box5{
-    position: absolute;
-    left: 1350px;
-    top: 450px
-}

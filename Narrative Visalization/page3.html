@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <title>CS-416 Narative Visualization Project</title>
-        <link rel="stylesheet" href="css/styles.css">
+        <link rel="stylesheet" href="css/styles3.css">
 		<script src="https://d3js.org/d3.v7.min.js"></script>
         <script src="https://rawgit.com/susielu/d3-annotation/master/d3-annotation.min.js"></script>
         <script src='https://unpkg.com/simple-statistics@7.7.0/dist/simple-statistics.min.js'>
@@ -11,29 +11,25 @@
     </head>
     <body>
         <h1>Is there a relationship between Nation's Wealth and Mortality Rate of it's people? </h1>
-        <a href="page2.html" title="same dir link">Next page</a>
+        
+        <a id="a1" href="page2.html" title="same dir link">Next page</a>
         <div class="mainView">
             <div class="Box1">
                 <h2>GDP vs Female<br> Mortality Rate</h2>
                 <svg id="GDPperCapita_FemaleMortalityChart"></svg>
+                
             </div>
             <div class="Box2">
-                <h2>Correlation between GPD per Capita and<br> Female Mortality for G7 countries</h2>
-                <svg id="GDPperCapita_FemaleMortalityCorrBarChart1"></svg>   
+                <h2>GDP vs Male<br> Mortality Rate</h2>
+                <svg id="GDPperCapita_MaleMortalityChart"></svg>
             </div>
-            <div class="Box3">
-                <h2>Correlation between GPD per Capita and <br>Female Mortality for some Asian countries</h2>
-                <svg id="GDPperCapita_FemaleMortalityCorrBarChart2"></svg>   
-            </div>
-            <div class="Box4">
-                <h2>Correlation between GPD per Capita and <br>Female Mortality for some African countries</h2>
-                <svg id="GDPperCapita_FemaleMortalityCorrBarChart3"></svg>   
-            </div>
-            <div class="Box5">
-                <h2>Correlation between GPD per Capita and <br>Female Mortality for some South American countries</h2>
-                <svg id="GDPperCapita_FemaleMortalityCorrBarChart4"></svg>   
-            </div>
-           
+            
+        </div>
+        <div id="SliderBar1">
+            <input type="range" name="mySlider1" id=FemaleSlider min="2002" max="2018" step="1" value="2018">
+        </div>
+        <div id="SliderBar2">
+            <input type="range" name="mySlider2" id=MaleSlider min="2002" max="2018" step="1" value="2018">
         </div>
         <div class="BelowMainViewText"></div>
     </body>
@@ -274,6 +270,61 @@
         } 
 
         
+        function reDrawCircles(scales, body, Year, xString, maxHealth){
+            let {xScale, yScale, rScale, colorScale} = scales;
+            
+            let dataset = WDIdataset.MergedData;
+            let durationTime = 1000;
+            //console.log(Year)
+
+            body.selectAll("circle")
+                .data(dataset)
+                .transition()
+                .duration(durationTime)
+                .attr("cx", function(d) {
+                                     if (d["Year"]== Year) {
+                                          return xScale(d[xString])
+                                          } else { return 0}})
+                .attr("cy", function(d) {
+                                      if (d["Year"]== Year) {
+                                          return yScale(d["GDP per Capita"])
+                                          } else {return 0}})
+                .attr("r", function(d) {
+                                      if (d["Year"]== Year) {
+                                          return rScale(d["Population"])
+                                          } else {return 0}})
+                .attr("fill", function(d) {
+                                      if (d["Year"]== Year){
+                                          return colorScale(d["Curr Health expenditure per cap"]/maxHealth)
+                                          }})
+                .select("title")
+                .text(function(d){
+                                      if ((d["Year"]== Year) && (xString == "Male Mortality Rate")) {
+                                          return "Country Name: " + d["Country Name"] + "\n" + "Income Group: " + d["Income Group"] + "\n" +
+                                                 "Curr Health expenditure per cap: " + d["Curr Health expenditure per cap"] + "\n" +
+                                                 "GDP per Capita: " + d["GDP per Capita"] + "\n" + "Population: " + d["Population"] + "\n" + 
+                                                 "Male Mortality Rate: " + d["Male Mortality Rate"] + "\n" +
+                                                 "Life Expectancy: " + d["Life Expectancy"] + "\n" + "Year: " + d["Year"];
+                                                 } else if ((d["Year"]== Year) && (xString == "Female Mortality Rate")) {
+                                                     return "Country Name: " + d["Country Name"] + "\n" + "Income Group: " + 
+                                                            d["Income Group"] + "\n" + "Curr Health expenditure per cap: " + 
+                                                            d["Curr Health expenditure per cap"] + "\n" + "GDP per Capita: " + 
+                                                            d["GDP per Capita"] + "\n" + "Population: " + d["Population"] + "\n" + 
+                                                            "Female Mortality Rate: " + d["Female Mortality Rate"] + "\n" +
+                                                            "Life Expectancy: " + d["Life Expectancy"] + "\n" + "Year: " + d["Year"];
+                                                            } else {
+                                                                return "Country Name: " + d["Country Name"] + "\n" + "Income Group: " + 
+                                                                       d["Income Group"] + "\n" + "Curr Health expenditure per cap: " + 
+                                                                       d["Curr Health expenditure per cap"] + "\n" + "GDP per Capita: " + 
+                                                                       d["GDP per Capita"] + "\n" + "Population: " + d["Population"] + "\n" + 
+                                                                       "Life Expectancy: " + d["Life Expectancy"] + "\n" + "Year: " + 
+                                                                       d["Year"];
+                                                                       }})
+                                                                             
+        }
+        
+
+
         function drawScatterPlot(MergedData, scales, config, Year, xString, maxHealth) {
             let {margin, container} = config; // this is equivalent to 'let margin = config.margin; let container = config.container'
             let {xScale, yScale, rScale, colorScale} = scales;
@@ -291,7 +342,7 @@
                             } else { return 0}})
                             
                         .attr("cy", function(d) {
-                            if (d["Year"]=== Year) {
+                            if (d["Year"]== Year) {
                                 return yScale(d["GDP per Capita"])
                             } else {return 0}})
                         .attr("r", function(d) {
@@ -301,7 +352,7 @@
                         .attr("fill", function(d) {
                              if (d["Year"]== Year){
                                  return colorScale(d["Curr Health expenditure per cap"]/maxHealth)
-                             }})      
+                             }})    
                         .append("title")
                         .text(function(d){
                              if ((d["Year"]== Year) && (xString == "Male Mortality Rate")) {
@@ -322,8 +373,9 @@
                                  "Curr Health expenditure per cap: " + d["Curr Health expenditure per cap"] + "\n" +
                                  "GDP per Capita: " + d["GDP per Capita"] + "\n" + "Population: " + d["Population"] + "\n" + 
                                  "Life Expectancy: " + d["Life Expectancy"] + "\n" + "Year: " + d["Year"];
-                            }})               
-                
+                            }})
+                           
+            return body;                 
         }
 
 
@@ -362,65 +414,6 @@
                      
         }
         
-        function SimpleCorr(data,CountryCode,MortalityRate){
-            let result1 = [];
-            let result2 = [];
-            let X = data.reduce((X, d) => {
-                if (d["Country Code"] === CountryCode){
-                    result1.push(d["GDP per Capita"])
-                    result2.push(d[MortalityRate])
-                    };
-                },{});
-            let Corr = ss.sampleCorrelation(result1, result2).toFixed(2);
-            if (isNaN(Corr)) { 
-                return 0;
-            } else {return Corr }
-        }
-
-        function DrawBars(xValue, yValue, data, config){
-            let { bodyWidth, bodyHeight, margin, container, height } = config; // this is equivalent to 'let margin = config.margin; let container = config.container'
-            //let {xScale, yScale, rScale, colorScale} = scales;
-            let body = container.append("g")
-                                .style("transform", `translate(${margin.left}px,${margin.top}px)`)
-
-            let yPad = 33;
-
-            let yAxisBottom = margin.top + (data.length*yPad);
-               
-
-            let svg = body.selectAll("rect")
-                          .data(data)
-
-            let xScale = d3.scaleLinear()
-                           .domain([-1,1])
-                           .range([0,xValue*0.8])
-                               
-            let xAxis = d3.axisBottom(xScale)
-                          .ticks(5)
-                
-            let yScale = d3.scaleBand()
-                           .domain(data.map(d => d["Country Code"]))
-                           .range([0,yAxisBottom*0.87])
-                           .padding(0.2)
-
-            let yAxis = d3.axisLeft(yScale)                              
-
-            svg.enter()
-               .append("rect")
-               .attr("y", (d) => {return yScale(d["Country Code"])}) //33
-               .attr("height", yScale.bandwidth())
-               .attr("width", d => {return xScale(d.Correlation)})
-               .attr("fill", "#2a5599")
-               
-            container.append("g")
-               .style("transform",`translate(${margin.left}px,${yAxisBottom*0.92}px)`)
-               .call(xAxis)
-                   
-            container.append("g")
-               .style("transform",`translate(${margin.left}px,${margin.top}px)`)
-               .call(yAxis)   
-        }
-
         function CreateAnnotations(id, labeltext, titletext, xVal, yVal, dxVal,dyVal){
             const annotations = [
                 {
@@ -470,68 +463,18 @@
             //Configure and draw 
             let FemaleConfig = getConfig("#GDPperCapita_FemaleMortalityChart", BoxWidth, BoxHeight);
             let FemScales = getCircleScales(xValue, yValue, MergedData, FemaleConfig)
-            drawScatterPlot(MergedData, FemScales, FemaleConfig, WDIdataset.Year, "Female Mortality Rate", maxHealth);
+            let FemaleBody = drawScatterPlot(MergedData, FemScales, FemaleConfig, WDIdataset.Year, "Female Mortality Rate",maxHealth);
             drawAxesChart(MergedData, FemScales, FemaleConfig);
 
 
-            let CountryNotUnique = MergedData.map(function (d) {return d["Country Code"]});
-            let Country = CountryNotUnique.filter((v, i, a) => a.indexOf(v) === i);
-            let Corr = [];
-            //USA, CAN, FRA, GBR, ITA, JPN, DEU
-            for (let c = 0; c < Country.length; c++) {
-                if ((Country[c]=="USA") || (Country[c]=="CAN") || (Country[c]=="FRA") || (Country[c]=="GBR") || (Country[c]=="ITA") || (Country[c]=="JPN") || (Country[c]=="DEU")) {
-                    Corr.push({"Country Code": Country[c], "Correlation": +SimpleCorr(MergedData, Country[c],"Female Mortality Rate")});
-                }
-            }
+            //Configure and draw 
+            let MaleConfig = getConfig("#GDPperCapita_MaleMortalityChart", BoxWidth, BoxHeight);
+            let MaleScales = getCircleScales(xValue, yValue, MergedData, FemaleConfig)
+            let MaleBody = drawScatterPlot(MergedData, MaleScales, MaleConfig, WDIdataset.Year, "Male Mortality Rate", maxHealth);
+            drawAxesChart(MergedData, MaleScales, MaleConfig);
+
+
             
-            BoxWidth = 550;
-            BoxHeight = 250;
-            let CorrChartConfig = getConfig("#GDPperCapita_FemaleMortalityCorrBarChart1", BoxWidth, BoxHeight);
-
-            DrawBars(xValue, yValue, Corr, CorrChartConfig);
-
-            //https://wits.worldbank.org/wits/wits/witshelp/content/codes/country_codes.htm
-
-
-            //The large Asian economies of Hong Kong(HKG), Singapore(SGP), South Korea(KOR), China(CHN), India(IND), Australia(AUS) and Russia(RUS).
-            Corr = [];
-            for (let c = 0; c < Country.length; c++) {
-                if ((Country[c]=="HKG") || (Country[c]=="SGP") || (Country[c]=="KOR") || (Country[c]=="CHN") || (Country[c]=="IND") || (Country[c]=="AUS") || (Country[c]=="RUS")) {
-                    Corr.push({"Country Code": Country[c], "Correlation": +SimpleCorr(MergedData, Country[c],"Female Mortality Rate")});
-                }
-            }
-
-            //console.log(Corr)
-            BoxWidth = 550;
-            BoxHeight = 250;
-            CorrChartConfig = getConfig("#GDPperCapita_FemaleMortalityCorrBarChart2", BoxWidth, BoxHeight);
-            DrawBars(xValue, yValue, Corr, CorrChartConfig);
-
-            //a few from South America economies Brazil(BRA), Argentina(ARG), Chile(CHL), Bolivia(BOL), Peru(PER), Colombia(COL), and Venezuela(VEN)
-            Corr = [];
-            for (let c = 0; c < Country.length; c++) {
-                if ((Country[c]=="BRA") || (Country[c]=="ARG") || (Country[c]=="CHL") || (Country[c]=="BOL") || (Country[c]=="PER") || (Country[c]=="COL") || (Country[c]=="VEN")) {
-                    Corr.push({"Country Code": Country[c], "Correlation": +SimpleCorr(MergedData, Country[c],"Female Mortality Rate")});
-                }
-            }
-
-            BoxWidth = 550;
-            BoxHeight = 250;
-            CorrChartConfig = getConfig("#GDPperCapita_FemaleMortalityCorrBarChart4", BoxWidth, BoxHeight);
-            DrawBars(xValue, yValue, Corr, CorrChartConfig);
-
-            //a few from Africa and Middle East economies South Africa(ZAF), Ghana(GHA), Nigeria(NGA), Turkey(TUR), Iran(IRN), Saudi Arabia(SAU), and Israel(ISR)
-            Corr = [];
-            for (let c = 0; c < Country.length; c++) {
-                if ((Country[c]=="ZAF") || (Country[c]=="GHA") || (Country[c]=="NGA") || (Country[c]=="TUR") || (Country[c]=="IRN") || (Country[c]=="SAU") || (Country[c]=="ISR")) {
-                    Corr.push({"Country Code": Country[c], "Correlation": +SimpleCorr(MergedData, Country[c],"Female Mortality Rate")});
-                }
-            }
-
-            BoxWidth = 550;
-            BoxHeight = 250;
-            CorrChartConfig = getConfig("#GDPperCapita_FemaleMortalityCorrBarChart3", BoxWidth, BoxHeight);
-            DrawBars(xValue, yValue, Corr, CorrChartConfig);
 
             let titletext = "The decay exponential hypothesis";
             let labeltext = "The overall trend for the 2018 is" + "\n" +
@@ -547,17 +490,21 @@
 
             CreateAnnotations("#GDPperCapita_FemaleMortalityChart", labeltext, titletext, xVal, yVal, dxVal,dyVal)
 
-            
-            titletext = "The USA";
-            labeltext = "The USA in 2018 has a GDP per Capita of" + "\n" +
-                        (MergedData[4323]["GDP per Capita"]).toFixed(2) + "." + "\n"  
-                        "that overall the higher the " + "\n" +
-                            "GDP per Capita, the lower the" + "\n" +
-                            "mortality rate for females."
-
-            
-            console.log(maxHealth);
-            console.log(MergedData[4323]["Curr Health expenditure per cap"])
+            d3.select("#MaleSlider")
+              .on("change", function(){
+                  selectedYear = this.value;
+                  //document.getElementById("SliderBar2").innerHTML = selectedYear;
+                  reDrawCircles(MaleScales, MaleBody, +selectedYear, "Male Mortality Rate", maxHealth);
+                                
+              })
+              
+            d3.select("#FemaleSlider")
+              .on("change", function(){
+                  selectedYear = this.value;
+                  //document.getElementById("SliderBar2").innerHTML = selectedYear;
+                  reDrawCircles(FemScales, FemaleBody, +selectedYear, "Female Mortality Rate", maxHealth);
+                                
+              })        
              
         }
 
