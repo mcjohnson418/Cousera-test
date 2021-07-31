@@ -31,34 +31,78 @@ svg{
 
 
 .mainView{
-    width: 1500px;
+    width: 2015px;
     height: 800px;
     display: flex;
     padding: 10px;
 }
 
+
+#SliderBar1{
+    position: relative;
+    display:flex;
+    bottom: -1.2em;
+}
+
 #FemaleSlider {
-    position:absolute;
-    width: 600px;
-    bottom: 100px;
-    left: 150px;
+    position: relative;
+    width: 670px;
+    bottom: 1.2em;
+    padding-left: 10px;
+    cursor: pointer;
+}
+
+#SliderBar1 p {
+    position: absolute;
+    bottom: -50px;
+    left: 270px;
+}
+
+#SliderBar2{
+    position: relative;
+    display:flex;
+    bottom: -1.2em;
 }
 
 #MaleSlider {
-    position:absolute;
-    width: 600px;
-    bottom: 100px;
-    right: 400px;
+    position: relative;
+    width: 670px;
+    bottom: 1.2em;
+    padding-left: 10px;
+    cursor: pointer;
+}
+
+#SliderBar2 p {
+    position: absolute;
+    bottom: -50px;
+    left: 270px;
 }
 
 .Box1{
     position: absolute;
     left: 100px;
+    width: 800px;
+    height: 800px;
 }
 
 .Box2{
     position: absolute;
     left: 1000px;
+    width: 800px;
+    height: 800px;
 }
+
+.BelowMainViewText{
+    width: 2015px;
+    height: 30px;
+    display: flex;
+    padding: 10px;
+    left: 50px;
+}
+
+.BelowMainViewText #a1{
+    position: relative;
+}
+
 
 

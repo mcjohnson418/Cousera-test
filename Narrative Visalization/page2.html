@@ -11,8 +11,6 @@
     </head>
     <body>
         <h1>Is there a relationship between Nation's Wealth and Mortality Rate of it's people? </h1>
-        <a id="a1" href="index.html" title="same dir link">back</a>
-        <a id="a2" href="page3.html" title="same dir link">Next page</a>
         <div class="mainView">
             <div class="Box1">
                 <h2>GDP vs Male<br> Mortality Rate</h2>
@@ -35,7 +33,18 @@
                 <svg id="GDPperCapita_MaleMortalityCorrBarChart4"></svg>   
             </div>
         </div>
-        <div class="BelowMainViewText"></div>
+        <div class="BelowMainViewText">
+            <p> The bar graphs explores from a small sample groups rather or not there is any sign of linearity betwen GPD per Capita and 
+                mortality rate. To really explore the weak hypothesis would require two things. First, we would have to fit a statistical 
+                model using a probability distribution from the exponential distribution family with GDP per Capita being one of the 
+                predictor variables ( along with healthcare expenditure pwer capita, population growth, personal income/economic class, 
+                and maybe even political climate ) for mortality rate (where mortality rate would be the dependent variable). Then, a 
+                goodness of fit analysis would determine rather the model was indeed a weak fit for the data. Second, a null hypothesis 
+                test on the model would determine rather or not GPD per Capita is even a significant predictor for mortality rate. 
+            </p>
+            <a id="a1" href="index.html" title="same dir link">back</a>
+            <a id="a2" href="page3.html" title="same dir link">Next page</a>
+        </div>
     </body>
     <script>
         let WDIdataset = {};
@@ -229,7 +238,7 @@
             let margin = {
                 top: 10,
                 bottom: 50,
-                left: 130,
+                left: 70,
                 right: 10
                 };
             
@@ -301,29 +310,47 @@
                         .attr("fill", function(d) {
                              if (d["Year"]== Year){
                                  return colorScale(d["Curr Health expenditure per cap"]/maxHealth)
-                             }})      
+                             }})
+                        .attr("opacity", 0.75)           
                         .append("title")
                         .text(function(d){
                              if ((d["Year"]== Year) && (xString == "Male Mortality Rate")) {
-                                 return "Country Name: " + d["Country Name"] + "\n" + "Income Group: " + d["Income Group"] + "\n" +
+                                 return "Country Name: " + d["Country Name"] + "\n" +
                                  "Curr Health expenditure per cap: " + d["Curr Health expenditure per cap"] + "\n" +
                                  "GDP per Capita: " + d["GDP per Capita"] + "\n" + "Population: " + d["Population"] + "\n" + 
                                  "Male Mortality Rate: " + d["Male Mortality Rate"] + "\n" +
                                  "Life Expectancy: " + d["Life Expectancy"] + "\n" + "Year: " + d["Year"];
                               } else if ((d["Year"]== Year) && (xString == "Female Mortality Rate")) {
-                                 return "Country Name: " + d["Country Name"] + "\n" + "Income Group: " + d["Income Group"] + "\n" +
+                                 return "Country Name: " + d["Country Name"] + "\n" +
                                  "Curr Health expenditure per cap: " + d["Curr Health expenditure per cap"] + "\n" +
                                  "GDP per Capita: " + d["GDP per Capita"] + "\n" + "Population: " + d["Population"] + "\n" + 
                                  "Female Mortality Rate: " + d["Female Mortality Rate"] + "\n" +
                                  "Life Expectancy: " + d["Life Expectancy"] + "\n" + "Year: " + d["Year"];
                               }
                             else {
-                                return "Country Name: " + d["Country Name"] + "\n" + "Income Group: " + d["Income Group"] + "\n" +
+                                return "Country Name: " + d["Country Name"] + "\n" +
                                  "Curr Health expenditure per cap: " + d["Curr Health expenditure per cap"] + "\n" +
                                  "GDP per Capita: " + d["GDP per Capita"] + "\n" + "Population: " + d["Population"] + "\n" + 
                                  "Life Expectancy: " + d["Life Expectancy"] + "\n" + "Year: " + d["Year"];
-                            }})               
-                
+                            }})
+        
+        body.selectAll("text")
+            .data(MergedData)
+            .enter()
+            .append("text") 
+            .text(function(d) {
+                if ((d["Year"] == Year) && (d["Population"] >= 100000000)) {
+                    return "." + d["Country Code"];
+                }})
+            .attr("x", function(d) {
+                    return xScale(d[xString]);
+                })
+		    .attr("y", function(d) {
+                    return yScale(d["GDP per Capita"]);
+                })
+		    .attr("font-family", "sans-serif")
+		    .attr("font-size", "11px")
+		    .attr("fill", "black");                                              
         }
 
 
@@ -410,7 +437,13 @@
                .attr("y", (d) => {return yScale(d["Country Code"])}) //33
                .attr("height", yScale.bandwidth())
                .attr("width", d => {return xScale(d.Correlation)})
-               .attr("fill", "#2a5599")
+               .attr("fill", function(d) {
+                   if (d.Correlation <= 0.7) {
+                      return "rgb(42,85,153)"} else {return "rgb(169, 104, 54)"}})
+               .append("title")
+               .text(function(d){
+                   return "Correlation Value: " + d.Correlation;
+                   }) 
                
             container.append("g")
                .style("transform",`translate(${margin.left}px,${yAxisBottom*0.92}px)`)
@@ -421,12 +454,13 @@
                .call(yAxis)   
         }
 
-        function CreateAnnotations(id, labeltext, titletext, xVal, yVal, dxVal,dyVal){
+        function CreateAnnotations(id, labeltext, titletext, xVal, yVal, dxVal, dyVal, wrap){
             const annotations = [
                 {
                     note: {
                         label: labeltext,
-                        title: titletext
+                        title: titletext,
+                        wrap: wrap
                     },
                     x: xVal,
                     y: yVal,
@@ -438,7 +472,7 @@
             const makeAnnotations = d3.annotation()
                                       .annotations(annotations)
 
-            d3.select(id) //id
+            d3.select(id) 
                 .append("g")
                 .call(makeAnnotations)    
 
@@ -533,27 +567,72 @@
             CorrChartConfig = getConfig("#GDPperCapita_MaleMortalityCorrBarChart3", BoxWidth, BoxHeight);
             DrawBars(xValue, yValue, Corr, CorrChartConfig);
 
-            let titletext = "The decay exponential hypothesis";
-            let labeltext = "The overall trend for the 2018 is" + "\n" +
-                            "that overall the higher the " + "\n" +
-                            "GDP per Capita, the lower the" + "\n" +
-                            "mortality rate for females."
+            let titletext = "The weak exponential decay hypothesis";
+            let labeltext = "As shown in the previous page, the GDP per Capita/Mortality rate for males follows the same trend as " +
+                            "GDP per Capita/Mortality rates for females.";
             
             let { MaleChart_width, MaleChart_height, margin } = MaleConfig;                
-            let xVal = margin.left + 400;
+            let xVal = margin.left + 470;
             let yVal = margin.top + 4;
             let dxVal = 0;
             let dyVal = 0;                 
 
-            CreateAnnotations("#GDPperCapita_MaleMortalityChart", labeltext, titletext, xVal, yVal, dxVal,dyVal)
+            CreateAnnotations("#GDPperCapita_MaleMortalityChart", labeltext, titletext, xVal, yVal, dxVal, dyVal, 150);
+
+            titletext = "Healthcare expenditure/GDP/Population";
+            labeltext = "What is not easy to explain from the data is how are countries that spend a lot less than the USA and have " +
+                        "smaller GDP per Capita than the USA, reports lower mortality rates for both sexes.";
+            
+            xVal = 200;
+            yVal = 190;
+            dxVal = 100;
+            dyVal = 10;                 
+
+            CreateAnnotations("#GDPperCapita_MaleMortalityChart", labeltext, titletext, xVal, yVal, dxVal, dyVal, 150);
 
             
-            titletext = "The USA";
-            labeltext = "The USA in 2018 has a GDP per Capita of" + "\n" +
-                        (MergedData[4323]["GDP per Capita"]).toFixed(2) + "." + "\n"  
-                        "that overall the higher the " + "\n" +
-                            "GDP per Capita, the lower the" + "\n" +
-                            "mortality rate for females."
+            titletext = "Correlation with G7";
+            labeltext = "The signs of linearity is small among this sample. Howver once again, Japan seems to be the exception.";
+            
+            xVal = 400;
+            yVal = 10;
+            dxVal = 0;
+            dyVal = 0;                 
+
+            CreateAnnotations("#GDPperCapita_MaleMortalityCorrBarChart1", labeltext, titletext, xVal, yVal, dxVal, dyVal, 140);
+
+            titletext = "Correlation with Asian counties";
+            labeltext = "Linearity assumption is low amoung this sample.";
+            
+            xVal = 400;
+            yVal = 10;
+            dxVal = 0;
+            dyVal = 0;                 
+
+            CreateAnnotations("#GDPperCapita_MaleMortalityCorrBarChart2", labeltext, titletext, xVal, yVal, dxVal, dyVal, 120);
+
+
+            titletext = "Correlation with African counties";
+            labeltext = "Again, sign of linearity is small at most, in this sample. Saudi Arabia seems to be the exception.";
+            
+            xVal = 400;
+            yVal = 10;
+            dxVal = 0;
+            dyVal = 0;                 
+
+            CreateAnnotations("#GDPperCapita_MaleMortalityCorrBarChart3", labeltext, titletext, xVal, yVal, dxVal, dyVal, 130);
+
+            titletext = "Correlation with S.A. counties";
+            labeltext = "The trend here is also similar as with the female samples. Some countries come close to the 0.7 value.";
+            
+            xVal = 400;
+            yVal = 10;
+            dxVal = 0;
+            dyVal = 0;                 
+
+            CreateAnnotations("#GDPperCapita_MaleMortalityCorrBarChart4", labeltext, titletext, xVal, yVal, dxVal, dyVal, 130);
+
+            console.log(MergedData); 
 
             
         }

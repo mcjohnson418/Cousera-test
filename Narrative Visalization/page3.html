@@ -12,26 +12,28 @@
     <body>
         <h1>Is there a relationship between Nation's Wealth and Mortality Rate of it's people? </h1>
         
-        <a id="a1" href="page2.html" title="same dir link">Next page</a>
         <div class="mainView">
             <div class="Box1">
                 <h2>GDP vs Female<br> Mortality Rate</h2>
                 <svg id="GDPperCapita_FemaleMortalityChart"></svg>
+                <div id="SliderBar1">
+                    <input type="range" name="mySlider1" id="FemaleSlider" min="2002" max="2018" step="1" value="2018">
+                    <p id="FemaleSliderText"></p>
+                </div>
                 
             </div>
             <div class="Box2">
                 <h2>GDP vs Male<br> Mortality Rate</h2>
                 <svg id="GDPperCapita_MaleMortalityChart"></svg>
-            </div>
-            
+                <div id="SliderBar2">
+                    <input type="range" name="mySlider2" id="MaleSlider" min="2002" max="2018" step="1" value="2018">
+                    <p id="MaleSliderText"></p>
+                </div>
+            </div> 
         </div>
-        <div id="SliderBar1">
-            <input type="range" name="mySlider1" id=FemaleSlider min="2002" max="2018" step="1" value="2018">
+        <div class="BelowMainViewText">
+            <a id="a1" href="page2.html" title="same dir link">Next page</a>
         </div>
-        <div id="SliderBar2">
-            <input type="range" name="mySlider2" id=MaleSlider min="2002" max="2018" step="1" value="2018">
-        </div>
-        <div class="BelowMainViewText"></div>
     </body>
     <script>
         let WDIdataset = {};
@@ -320,7 +322,24 @@
                                                                        "Life Expectancy: " + d["Life Expectancy"] + "\n" + "Year: " + 
                                                                        d["Year"];
                                                                        }})
-                                                                             
+                                             
+            body.selectAll("text")
+                .data(dataset)
+                .transition()
+                .duration(durationTime)
+                .text(function(d) {
+                    if ((d["Year"] == Year) && (d["Population"] >= 100000000)) {
+                        return ". " + d["Country Code"];
+                        }})
+                .attr("x", function(d) {
+                    return xScale(d[xString]);
+                    })
+		        .attr("y", function(d) {
+                    return yScale(d["GDP per Capita"]);
+                    })
+		        .attr("font-family", "sans-serif")
+		        .attr("font-size", "11px")
+		        .attr("fill", "black");                                                                                                                            
         }
         
 
@@ -374,6 +393,24 @@
                                  "GDP per Capita: " + d["GDP per Capita"] + "\n" + "Population: " + d["Population"] + "\n" + 
                                  "Life Expectancy: " + d["Life Expectancy"] + "\n" + "Year: " + d["Year"];
                             }})
+
+            body.selectAll("text")
+                .data(MergedData)
+                .enter()
+                .append("text") 
+                .text(function(d) {
+                    if ((d["Year"] == Year) && (d["Population"] >= 100000000)) {
+                        return "." + d["Country Code"];
+                        }})
+                .attr("x", function(d) {
+                    return xScale(d[xString]);
+                    })
+		        .attr("y", function(d) {
+                    return yScale(d["GDP per Capita"]);
+                    })
+		        .attr("font-family", "sans-serif")
+		        .attr("font-size", "11px")
+		        .attr("fill", "black");                    
                            
             return body;                 
         }
@@ -474,13 +511,9 @@
             drawAxesChart(MergedData, MaleScales, MaleConfig);
 
 
-            
-
-            let titletext = "The decay exponential hypothesis";
-            let labeltext = "The overall trend for the 2018 is" + "\n" +
-                            "that overall the higher the " + "\n" +
-                            "GDP per Capita, the lower the" + "\n" +
-                            "mortality rate for females."
+            let titletext = "The weak exponential decay hypothesis";
+            let labeltext = "At this point, you can use the slider to change the year in order to query the data from 2002 to 2018." +
+                            "As you change the year, the tooltip for each country will display the data.";
             
             let { FemChart_width, FemChart_height, margin } = FemaleConfig;                
             let xVal = margin.left + 400;
@@ -488,20 +521,39 @@
             let dxVal = 0;
             let dyVal = 0;                 
 
-            CreateAnnotations("#GDPperCapita_FemaleMortalityChart", labeltext, titletext, xVal, yVal, dxVal,dyVal)
+            CreateAnnotations("#GDPperCapita_FemaleMortalityChart", labeltext, titletext, xVal, yVal, dxVal,dyVal);
+
+            labeltext = "Take notice of how some countries maintain a lower healthcare expenditure per capita and " +
+                        " lower GDP per Capita while maintaining a lower mortality rate then United States.";
+            
+                     
+            xVal = margin.left + 400;
+            yVal = margin.top + 4;
+            dxVal = 0;
+            dyVal = 0;                 
+
+            CreateAnnotations("#GDPperCapita_MaleMortalityChart", labeltext, titletext, xVal, yVal, dxVal,dyVal)
+
+            let MaleSlider = document.getElementById("MaleSlider");
+            let MaleOutput = document.getElementById("MaleSliderText");  
+            MaleOutput.innerHTML = "Year selected: " + MaleSlider.value;
 
             d3.select("#MaleSlider")
               .on("change", function(){
                   selectedYear = this.value;
-                  //document.getElementById("SliderBar2").innerHTML = selectedYear;
+                  MaleOutput.innerHTML = "Year selected: " + selectedYear;
                   reDrawCircles(MaleScales, MaleBody, +selectedYear, "Male Mortality Rate", maxHealth);
                                 
               })
-              
+            
+            let FemaleSlider = document.getElementById("FemaleSlider");
+            let FemaleOutput = document.getElementById("FemaleSliderText");  
+            FemaleOutput.innerHTML = "Year selected: " + FemaleSlider.value;
+
             d3.select("#FemaleSlider")
               .on("change", function(){
                   selectedYear = this.value;
-                  //document.getElementById("SliderBar2").innerHTML = selectedYear;
+                  FemaleOutput.innerHTML = "Year selected: " + selectedYear;
                   reDrawCircles(FemScales, FemaleBody, +selectedYear, "Female Mortality Rate", maxHealth);
                                 
               })        

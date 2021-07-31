@@ -1,12 +1,9 @@
 body {
-    font-family: Helvetica, Arial, sans-serif
+    font-family: Helvetica, Arial, sans-serif;
+    background-color: lightgrey;
 }
 
-body a{
-    position: absolute;
-    bottom: 10px;
-    right: 30px;
-}
+
 h1 {
     background-color: #2a5599;
     color: white;
@@ -24,12 +21,11 @@ svg{
 
 
 .mainView{
-    width: 1500px;
-    height: 800px;
+    width: 2015px;
+    height: 750px;
     display: flex;
     padding: 10px;
 }
-
 
 .Box2{
     position: absolute;
@@ -51,4 +47,37 @@ svg{
     position: absolute;
     left: 1350px;
     top: 450px
+}
+
+.BelowMainViewText{
+    width: 2015px;
+    height: 300px;
+    display: flex;
+    padding: 10px;
+    left: 50px;
+}
+
+.BelowMainViewText p:nth-child(1){
+    position: relative;
+    left: 2.2em;
+    bottom: 0;
+    text-align: left;
+    width: 500px;
+    padding-right: 20px;
+
+}
+
+.BelowMainViewText p:nth-child(2){
+    position: relative;
+    left: 20em;
+    bottom: 0;
+    text-align: left;
+    width: 900px;
+
+}
+
+.BelowMainViewText a{
+    position: relative;
+    bottom: -100px;
+    left: 25em;
 }
