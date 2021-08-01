@@ -6,8 +6,7 @@
         <link rel="stylesheet" href="css/styles.css">
 		<script src="https://d3js.org/d3.v7.min.js"></script>
         <script src="https://rawgit.com/susielu/d3-annotation/master/d3-annotation.min.js"></script>
-        <script src='https://unpkg.com/simple-statistics@7.7.0/dist/simple-statistics.min.js'>
-        </script>
+        <script src='https://unpkg.com/simple-statistics@7.7.0/dist/simple-statistics.min.js'></script>
     </head>
     <body>
         <h1>Is there a relationship between Nation's Wealth and Mortality Rate of it's people? </h1>
@@ -37,7 +36,7 @@
         <div class="BelowMainViewText">
             <p> The center coordinate for each circle is the GDP per Capita and Mortality rate. The area of the circle directly related to 
                 the population. The color represents the healthcare expenditure per capita.The more green-ish the color, the higher the 
-                expenditure per capita. The more purle-ish the lower the expenditure per capita.</p>
+                expenditure per capita. The more purple-ish the lower the expenditure per capita.</p>
             <p> The question that always seems to come up is if there exists a linear relationship. Which leads us to the bar graphs. These 
                 graphs represent correlations values between GPD per Capita and Female Mortality rates from the years 2000 to 2020. A good 
                 case for linearity is cases where the values is 0.95 or greater. Anything less than that would imply non-linearity as a 
@@ -48,6 +47,8 @@
         </div>
     </body>
     <script>
+        
+
         let WDIdataset = {};
 
         function loadData(){
@@ -283,8 +284,8 @@
             return { xScale, yScale, rScale, colorScale };
         } 
 
-        
         function drawScatterPlot(MergedData, scales, config, Year, xString, maxHealth) {
+            //import {legend} from "@d3/color-legend";
             let {margin, container} = config; // this is equivalent to 'let margin = config.margin; let container = config.container'
             let {xScale, yScale, rScale, colorScale} = scales;
             let body = container.append("g")
@@ -292,6 +293,8 @@
 
             let ScatterPlots = body.selectAll("circle")
                                    .data(MergedData)
+
+           
 
             ScatterPlots.enter()
                         .append("circle")
@@ -351,7 +354,8 @@
                             })
 			            .attr("font-family", "sans-serif")
 			            .attr("font-size", "11px")
-			            .attr("fill", "black");                                         
+			            .attr("fill", "black");   
+                                                        
         }
 
 
@@ -594,20 +598,20 @@
 
             CreateAnnotations("#GDPperCapita_FemaleMortalityChart", labeltext, titletext, xVal, yVal, dxVal, dyVal, 250);
 
-            labeltext = "However, what is really noticable about this cluster is all the countries with a GDP per Capita less than USA, spend " + 
-                        "significantly lower in healthcare while reporting lower mortality rates";
+            labeltext = "However, the small cluster of little blue circles (representing the developed economies) appears to be countries with a GDP per "+
+                        "Capita less than United States all seem to have significantly lower in healthcare while reporting lower mortality rates.";
             
             xVal = 150;
-            yVal = 150;
+            yVal = 140;
             dxVal = 50;
             dyVal = 10;                 
 
             CreateAnnotations("#GDPperCapita_FemaleMortalityChart", labeltext, titletext, xVal, yVal, dxVal, dyVal, 150);
 
-            titletext = "Other influences";
-            labeltext = "Show of the countries that are labeled developing or emerging that have lower GDP per capita show lower mortality rates then " +
-                         "so called developed nations";
-            xVal = 210;
+            titletext = "Other influences?";
+            labeltext = "Some of the countries (developing or emerging economies) that have lower GDP per capita show lower or equal mortality rates " +
+                        "of the developed economies";
+            xVal = 220;
             yVal = 470;
             dxVal = 160;
             dyVal = -40; 
